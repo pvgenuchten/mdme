@@ -221,13 +221,13 @@ export default {
     },
     fetchDOI(doi) {
         console.log(doi)
-        if (doi.indexOf('') == -1) {
+        if (doi.indexOf('http://dx.doi.org') == -1) {
           alert('provide valid doi');
         } else {
-          this.axios.get(this.doi, {headers: {'Accept': 'application/json'}}).then(function(response){
+          this.axios.get(doi, {headers: {'Accept': 'application/json'}}).then(function(response){
             this.id = doi;
             if (response.title) { this.title = response.title } 
-            if (response.subject) { this.keywords = response.subject.join('; ') }
+            if (response.subject) { this.keywords = response.subject.join('; ').catch(function(){alert('Failed to retrieve DOI' + doi)}) }
           })
         }
     }
