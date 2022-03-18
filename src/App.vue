@@ -78,7 +78,7 @@ export default {
   opts,
   data: () => ({
     valid: false,
-    model: {},
+    model: {id:"foo",title:'fAA',keywords:'',date:'',contacts:[]},
     opts,
     toptab: null,
     schema: {
@@ -220,15 +220,23 @@ export default {
       console.log(this);
     },
     fetchDOI(doi) {
-        console.log(doi)
         if (doi.indexOf('http://dx.doi.org') == -1) {
           alert('provide valid doi');
         } else {
+          let self = this;
           this.axios.get(doi, {headers: {'Accept': 'application/json'}}).then(function(response){
-            this.id = doi;
-            if (response.title) { this.title = response.title } 
-            if (response.subject) { this.keywords = response.subject.join('; ').catch(function(){alert('Failed to retrieve DOI' + doi)}) }
-          })
+            self.model.id = doi;
+            try {
+              self.model.contacts = [{"name":response.data.author[0].family}];
+            } catch (e) { console.log(e) }
+            if (response.data.title) { self.model.title = response.data.title } 
+            try {
+              if (response.data.created) { 
+                  self.model.date = response.data.created['date-time'].split('T')[0] } 
+            } catch (e) { console.log(e) }
+            if (response.data.subject) { self.model.keywords = response.data.subject.join('; ')}
+            alert('Doi '+ doi +' imported!')
+          }).catch(function(){alert('Failed to retrieve DOI' + doi)}) 
         }
     }
   }
