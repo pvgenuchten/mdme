@@ -31,19 +31,17 @@
                   v-model="dataset"
                   label="Datafile"
                 ></v-text-field>
-
-                <v-file-input
-                  v-model="upload"
-                  label="Upload a metadata or data file"
-                ></v-file-input>-->
+-->
 
                 <v-btn
                   color="success"
                   class="mr-4"
-                  @click="$emit('submitDOI', doi)"
+                  @click="$emit('submitDoi', doi)"
                 >
                   submit
                 </v-btn>
+
+
 
               </v-form>
       </v-col>
@@ -53,6 +51,10 @@
 
 <script>
   export default {
+    emits: ['submitDoi'],
+    setup(props, ctx) {
+      ctx.emit('submitDoi')
+    },
     name: 'IntroPage',
     data: () => ({
      'doi': "http://dx.doi.org/10.1038/nrd842",

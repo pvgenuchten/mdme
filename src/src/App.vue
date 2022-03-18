@@ -18,8 +18,8 @@
       <v-tab-item value="tab-1">
         <v-card flat>
           <v-card-text>
-          
-            <intro-page ref="IntroPage"/>
+
+            <intro-page ref="IntroPage" @submitDoi="fetchDOI" />
 
           </v-card-text>
         </v-card>
@@ -30,7 +30,7 @@
           
               <h1>Annotate</h1>
               <v-form v-model="valid">
-                <v-jsf v-model="model" :schema="schema" @submitDOI="fetchDOI"/>
+                <v-jsf v-model="model" :schema="schema" />
                 <v-btn
                   color="success"
                   class="mr-4"
@@ -64,13 +64,9 @@ import VJsf from '@koumoul/vjsf/lib/VJsf.js'
 import '@koumoul/vjsf/lib/VJsf.css'
 import '@koumoul/vjsf/lib/deps/third-party.js'
 import IntroPage from './components/IntroPage.vue'
-import axios from 'axios'
 
 const opts =  {
-    'httpLib': axios
-    fullOptions : {
-    'httpLib': axios
-    }
+    
 }
 
 export default {
@@ -79,13 +75,10 @@ export default {
     'IntroPage': IntroPage,
     'VJsf': VJsf 
   },
-  options: {
-    'httpLib': axios
-  },
+  opts,
   data: () => ({
     valid: false,
     model: {},
-    'httpLib': axios,
     opts,
     toptab: null,
     schema: {
@@ -227,10 +220,11 @@ export default {
       console.log(this);
     },
     fetchDOI(doi) {
+        console.log(doi)
         if (doi.indexOf('') == -1) {
           alert('provide valid doi');
         } else {
-          axios.get(this.doi, {headers: {'Accept': 'application/json'}}).then(function(response){
+          this.axios.get(this.doi, {headers: {'Accept': 'application/json'}}).then(function(response){
             this.id = doi;
             if (response.title) { this.title = response.title } 
             if (response.subject) { this.keywords = response.subject.join('; ') }
