@@ -28,7 +28,8 @@
         <v-card flat>
           <v-card-text>
           
-              <h1>Annotate</h1>
+              <h1>Dataset annotation</h1>
+              <p>A subset of fields to annotate a dataset with required metadata elements</p>
               <v-form v-model="valid">
                 <v-jsf v-model="model" :schema="schema" />
                 <v-btn
@@ -78,7 +79,17 @@ export default {
   opts,
   data: () => ({
     valid: false,
-    model: {id:"foo",title:'fAA',keywords:'',date:'',contacts:[]},
+    model: {
+      id:'',
+      title:'',
+      keywords:'',
+      date:'',
+      contacts:[{name:'',role:''}],
+      distributions:[{url:''}],
+      citations:[{doi:'',author:'',title:''}],
+      language:'', 
+      description:''
+    },
     opts,
     toptab: null,
     schema: {
@@ -145,8 +156,35 @@ export default {
         },
         scale: { type: 'number', 'description': 'Scale (vector) or resolution (grid)' },
         crs: { type: 'string', 'description': 'Spatial projection system, e.g. EPSG:4326' },
-        url: { type: 'string', 'description': 'Location of the Dataset file or API endpoint', 'title': 'File location' },
-        format: { type: 'string', 'description': 'File format dataset' },
+        distributions: {
+          "type": "array",
+          "title": "Distributions",
+          "description": "Add a distribution",
+          "x-itemTitle": "distribution",
+          "items": {
+            "type": "object",
+            "required": [
+              "href"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the resource",
+                "title": "Name"
+              },
+              "href": {
+                "type": "string",
+                "description": "Url of the dataset or service",
+                "title": "Distribution link"
+              },
+              "protocol": {
+                "type": "string",
+                "description": "Format of protocol of the service",
+                "title": "Format/Protocol"
+              }
+            }
+          }
+        },
         contacts: {
           "type": "array",
           "title": "Contacts",
@@ -155,7 +193,7 @@ export default {
           "items": {
             "type": "object",
             "required": [
-              "organizaton", "email", "role"
+              "role"
             ],
             "properties": {
               "name": {
@@ -227,16 +265,41 @@ export default {
           this.axios.get(doi, {headers: {'Accept': 'application/json'}}).then(function(response){
             self.model.id = doi;
             try {
-              self.model.contacts = [{"name":response.data.author[0].family}];
+              self.model.contacts = [{"name":response.data.author[0].family, role:'author'}];
             } catch (e) { console.log(e) }
             if (response.data.title) { self.model.title = response.data.title } 
+            if (response.data.language) { self.model.language = response.data.language } 
+            if (response.data.description) { self.model.abstract = response.data.description } 
+            if (response.data.reference){
+              try {
+                let cits=[];
+                response.data.reference.forEach(function(cit){
+                  if (cit['DOI']){
+                    cits.push({doi:cit['DOI'],title:cit['unstructured'],authors:cit['author']})
+                  }
+                })
+                self.model.citations = cits;
+              } catch (e) { console.log(e) }
+            }
+            if (response.data.link){
+              try {
+                let lnks=[];
+                response.data.link.forEach(function(lnk){
+                  if (lnk['rel'] && lnk['rel']=='item'){
+                    lnks.push({href:lnk['URL'],protocol:lnk['content-type']})
+                  }
+                })
+                self.model.distributions = lnks;
+              } catch (e) { console.log(e) }
+            }
             try {
               if (response.data.created) { 
                   self.model.date = response.data.created['date-time'].split('T')[0] } 
             } catch (e) { console.log(e) }
             if (response.data.subject) { self.model.keywords = response.data.subject.join('; ')}
             alert('Doi '+ doi +' imported!')
-          }).catch(function(){alert('Failed to retrieve DOI' + doi)}) 
+            self.model.toptab = 'tab-2';
+          }).catch(function(){alert('Failed to retrieve DOI: ' + doi)}) 
         }
     }
   }

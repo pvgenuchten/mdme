@@ -57,7 +57,7 @@
     },
     name: 'IntroPage',
     data: () => ({
-     'doi': "http://dx.doi.org/10.1038/nrd842",
+     'doi': "",
      'upload': "",
      'record': "",
      'dataset': "",
