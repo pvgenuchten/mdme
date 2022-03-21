@@ -189,7 +189,7 @@ export default {
           "type": "array",
           "title": "Contacts",
           "description": "Add a contact",
-          "x-itemTitle": "organizaton",
+          "x-itemTitle": "role",
           "items": {
             "type": "object",
             "required": [
@@ -200,9 +200,9 @@ export default {
                 "type": "string",
                 "title": "Name"
               },
-              "organizaton": {
+              "organisation": {
                 "type": "string",
-                "title": "Organizaton"
+                "title": "Organisation"
               },
               "email": {
                 "type": "string",
@@ -258,45 +258,39 @@ export default {
       console.log(this);
     },
     fetchDOI(doi) {
-        if (doi.indexOf('http://dx.doi.org') == -1) {
+        if (doi.indexOf('doi.org') == -1) {
           alert('provide valid doi');
         } else {
           let self = this;
-          this.axios.get(doi, {headers: {'Accept': 'application/json'}}).then(function(response){
+          this.axios.get(doi, {headers: {'Accept': 'application/x-bibtex'}}).then(function(response){
+            let doiMD = {}; 
+            response.data.split(',').forEach(function(f){
+              let tpl = f.split('=');
+              if (tpl.length==2){
+                doiMD[tpl[0].trim()]=tpl[1].replace('{','').replace('}','').trim()
+              }
+            })
+
             self.model.id = doi;
+            //publisher and authors
             try {
-              self.model.contacts = [{"name":response.data.author[0].family, role:'author'}];
+              let cnt = [];
+              (doiMD.author).split(' and ').forEach(function(c){
+                cnt.push({"name":c, role:'author'});
+              })
+              if (doiMD.publisher){
+                cnt.push({"organisation":doiMD.publisher,role:'publisher'});
+              }
+              self.model.contacts = cnt;
             } catch (e) { console.log(e) }
-            if (response.data.title) { self.model.title = response.data.title } 
-            if (response.data.language) { self.model.language = response.data.language } 
-            if (response.data.description) { self.model.abstract = response.data.description } 
-            if (response.data.reference){
-              try {
-                let cits=[];
-                response.data.reference.forEach(function(cit){
-                  if (cit['DOI']){
-                    cits.push({doi:cit['DOI'],title:cit['unstructured'],authors:cit['author']})
-                  }
-                })
-                self.model.citations = cits;
-              } catch (e) { console.log(e) }
-            }
-            if (response.data.link){
-              try {
-                let lnks=[];
-                response.data.link.forEach(function(lnk){
-                  if (lnk['rel'] && lnk['rel']=='item'){
-                    lnks.push({href:lnk['URL'],protocol:lnk['content-type']})
-                  }
-                })
-                self.model.distributions = lnks;
-              } catch (e) { console.log(e) }
-            }
+            if (doiMD.title) { self.model.title = doiMD.title } 
+            if (doiMD.language) { self.model.language = doiMD.language } 
             try {
-              if (response.data.created) { 
-                  self.model.date = response.data.created['date-time'].split('T')[0] } 
+              if (doiMD.year) { 
+                  self.model.date = doiMD.year.toString() + "-" + (doiMD.month?(["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].findIndex(m => (m === doiMD.month))+1):1).toString() + "-1" } 
             } catch (e) { console.log(e) }
-            if (response.data.subject) { self.model.keywords = response.data.subject.join('; ')}
+            if (doiMD.keywords) { self.model.keywords = doiMD.keywords}
+
             alert('Doi '+ doi +' imported!')
             self.model.toptab = 'tab-2';
           }).catch(function(){alert('Failed to retrieve DOI: ' + doi)}) 
