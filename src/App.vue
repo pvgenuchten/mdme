@@ -6,12 +6,10 @@
       v-model="toptab"
       background-color="transparent"
       color="basil"
-      grow
-      centered>
+      grow>
         <v-tabs-slider></v-tabs-slider>
         <v-tab href="#tab-1">Welcome</v-tab>
         <v-tab href="#tab-2">Annotate</v-tab>
-        <v-tab href="#tab-3">Complete</v-tab>
       </v-tabs>
     
     <v-tabs-items v-model="toptab">
@@ -43,16 +41,7 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-      <v-tab-item value="tab-3">
-        <v-card flat>
-          <v-card-text>
-              <h1>Thank you!</h1>
-              <p>
-              Your data has been submitted. You can export the metadata in various formats:
-              </p>
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
+    
     </v-tabs-items>
 
       </v-container>
@@ -258,9 +247,15 @@ export default {
       console.log(this);
     },
     fetchDOI(doi) {
-        if (doi.indexOf('doi.org') == -1) {
-          alert('provide valid doi');
+        if (doi.trim().indexOf('http') == 0) { 
+          //normal case
+          doi = doi.trim();
+        } else if (doi.indexOf('doi:') == 0) {
+          doi = doi.replace('doi:','https://doi.org/');
         } else {
+          doi = 'https://doi.org/' + doi;
+        }
+        if (doi.trim() != '') {
           let self = this;
           this.axios.get(doi, {headers: {'Accept': 'application/x-bibtex'}}).then(function(response){
             let doiMD = {}; 
