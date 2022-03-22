@@ -48,15 +48,20 @@
                           multiple
                           hint="Pick your layer(s)"
                           persistent-hint
+                          @change="$emit('setLayer', layers, WmsLayers, WMSCaps)"
                         ></v-select>
+
+                <p>Upload a iso19139 metadata document</p>
+
+                <file-reader @load="parseMetadata($event)"></file-reader>
+
+
 
                 <p>Upload a sample of the dataset</p>
 
-                <v-text-field 
-                  v-model="dataset"
-                  label="Datafile"
-                ></v-text-field>
-
+                <file-reader @load="data = $event"></file-reader>
+                <textarea rows="10" v-model="data"></textarea>
+                
               </v-form>
       </v-col>
     </v-row>
@@ -64,50 +69,75 @@
 </template>
 
 <script>
+import FileReader from "./FileReader";
+var parseString = require('xml2js').parseString;
 
-  var parseString = require('xml2js').parseString;
-
-  export default {
-    emits: ['submitDoi'],
-    setup(props, ctx) {
-      ctx.emit('submitDoi')
+export default {
+  emits: ['submitDoi', 'setLayer', 'updateModel' ],
+  setup(props, ctx) {
+    ctx.emit('submitDoi')
+  },
+  name: 'IntroPage',
+  data: () => ({
+    'doi': "",
+    'metadata': "",
+    'data': "",
+    'service': "",
+    'WMSCaps': [],
+    'WmsLayers': [],
+    'layers': [],
+    'upload': "",
+    'record': "",
+    'WMSContact':{}
+  }),
+  components : {
+    FileReader
+  },
+  methods : {
+    parseMetadata (str) {
+      console.log(str);
+      parseString(str, (err, result) => {
+        if(err) {
+          console.log(err)
+        } else {
+          try {
+            let model = {id: result['gmd:MD_Metadata']['gmd:fileIdentifier'][0]['gco:CharacterString'][0]};
+            this.$emit('updateModel',model);
+          } catch (e) {console.log(e)}
+        }
+      });
     },
-    name: 'IntroPage',
-    data: () => ({
-     'doi': "",
-     'service': "",
-     'WmsLayers': [],
-     'layers': [],
-     'upload': "",
-     'record': "",
-     'dataset': "",
-    }),
-    methods : {
-      fetchCapabilities(){
-        let self = this;
-        this.axios.get(this.service.split('?')[0] + '?request=GetCapabilities&service=WMS&version=1.3.0')
-          .then(response => {
-            parseString(response.data, (err, result) => {
-              if(err) {
-                console.log(err)
-              } else {
-                //populate layers
-                console.log(result);
-                try {
-                result['WMS_Capabilities']['Capability'][0]['Layer'][0]['Layer'].forEach(function(l){
-                  console.log(l)
-                  if(l.Name && l.Name[0]) {
-                    self.WmsLayers.push({name:l.Name[0],title:l.Title[0],abstract:l.Abstract[0]});
-                  }
-                })
-                } catch (e) {
-                  console.log(result);
-                  console.log(e);
-                }
+    fetchCapabilities(){
+      let self = this;
+      this.axios.get(this.service.split('?')[0] + '?request=GetCapabilities&service=WMS&version=1.3.0')
+        .then(response => {
+          parseString(response.data, (err, result) => {
+            if(err) {
+              console.log(err)
+            } else {
+              this.WMSCaps = {
+                href: this.service,
+                contact: result['WMS_Capabilities'].Service[0].ContactInformation[0],
+                license: result['WMS_Capabilities'].Service[0].AccessConstraints[0]
               }
-            });        
-          })
-      }
+              try {
+              result['WMS_Capabilities']['Capability'][0]['Layer'][0]['Layer'].forEach(function(lyr){
+                  let myLayer = {}
+                  Object.keys(lyr).forEach(function(k){
+                    if (lyr[k][0]) myLayer[k.toLowerCase()] = lyr[k][0];
+                  })
+                  if (myLayer.name){
+                    self.WmsLayers.push(myLayer);
+                  }
+              })
+              } catch (e) {
+                console.log(result);
+                console.log(e);
+              }
+            }
+          });        
+        })
     }
   }
+}
 </script>

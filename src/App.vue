@@ -17,7 +17,7 @@
         <v-card flat>
           <v-card-text>
 
-            <intro-page ref="IntroPage" @submitDoi="fetchDOI" />
+            <intro-page ref="IntroPage" @submitDoi="fetchDOI" @setLayer="setWMS" @updateModel="setModel" />
 
           </v-card-text>
         </v-card>
@@ -37,13 +37,10 @@
                 >  submit
                 </v-btn>
               </v-form>
-
           </v-card-text>
         </v-card>
       </v-tab-item>
-    
     </v-tabs-items>
-
       </v-container>
     </v-main>
   </v-app>
@@ -55,9 +52,7 @@ import '@koumoul/vjsf/lib/VJsf.css'
 import '@koumoul/vjsf/lib/deps/third-party.js'
 import IntroPage from './components/IntroPage.vue'
 
-const opts =  {
-    
-}
+const opts = {}
 
 export default {
   name: 'App',
@@ -73,9 +68,10 @@ export default {
       title:'',
       keywords:'',
       date:'',
+      geographicalextent:'',
       contacts:[{name:'',role:''}],
-      distributions:[{url:''}],
-      citations:[{doi:'',author:'',title:''}],
+      distributions:[],
+      citations:[],
       language:'', 
       description:''
     },
@@ -127,7 +123,7 @@ export default {
         },
         geographicalextent: { 
           type: 'string',
-          "description": "Geographical extent, e.g. 'Verdon, France' or geographic bounds, e.g. '4,50 6,52'", },
+          "description": "Geographical extent, e.g. 'Verdon, France' or geographic bounds, e.g. '4,50,6,52'", },
         temporalextent: { "type": "array",
               "title": "Reference period",
               "items": [
@@ -149,7 +145,7 @@ export default {
           "type": "array",
           "title": "Distributions",
           "description": "Add a distribution",
-          "x-itemTitle": "distribution",
+          "x-itemTitle": "href",
           "items": {
             "type": "object",
             "required": [
@@ -244,7 +240,55 @@ export default {
   }),
   methods: {
     saveData() {
-      console.log(this);
+      const data = JSON.stringify(this.model)
+      const blob = new Blob([data], {type: 'text/plain'})
+      const e = document.createEvent('MouseEvents'),
+      a = document.createElement('a');
+      a.download = "test.json";
+      a.href = window.URL.createObjectURL(blob);
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+      e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      a.dispatchEvent(e);
+    },
+    setModel (mdl) {
+      Object.keys(mdl).forEach(k => this.model[k] = mdl[k]);
+    },
+    setWMS(selectedLYRS,layers,caps){
+
+      let self = this;
+      let layerName = "";
+      
+      selectedLYRS.forEach(function(l){
+        let myLayer = layers.find(ls => ls.name === l);
+        if (myLayer){
+          self.model.title = myLayer.title;
+          try {
+            console.log(myLayer);
+            self.model.abstract = myLayer.abstract;
+            layerName = myLayer.name;
+            self.model.keywords = myLayer.keywordlist.Keyword.join(', ');
+          } catch (e) { console.log(e)}
+          try {
+           let bb = myLayer.ex_geographicboundingbox;
+           self.model.geographicalextent = bb.westBoundLongitude.toString() + ',' + +bb.southBoundLatitude +  ',' + bb.eastBoundLongitude + ',' + bb.northBoundLatitude;
+          } catch (e) { console.log(e)}
+        }   
+      })
+      this.model.id = caps.href.split('?')[0] + '#' + layerName;
+      this.model.distributions = [{href:caps.href,name:layerName,protocol:'OGC:WMS'}];
+      try {
+        let c = caps.contact;
+        this.model.contacts=[{email:c.ContactElectronicMailAddress[0],
+              role:'publisher',
+              name: c.ContactPersonPrimary[0].ContactPerson[0],
+              organisation:  c.ContactPersonPrimary[0].ContactOrganization[0]
+          }];
+      } catch (e) { console.log(e)}
+      try {
+        let l = caps.license;
+        console.log(l);
+        this.model.accessconstraints=l;
+      } catch (e) { console.log(e)}
     },
     fetchDOI(doi) {
         if (doi.trim().indexOf('http') == 0) { 
@@ -285,7 +329,7 @@ export default {
                   self.model.date = doiMD.year.toString() + "-" + (doiMD.month?(["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].findIndex(m => (m === doiMD.month))+1):1).toString() + "-1" } 
             } catch (e) { console.log(e) }
             if (doiMD.keywords) { self.model.keywords = doiMD.keywords}
-
+            self.model.id = doi.split('doi.org/')[1];
             alert('Doi '+ doi +' imported!')
             self.model.toptab = 'tab-2';
           }).catch(function(){alert('Failed to retrieve DOI: ' + doi)}) 
