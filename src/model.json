@@ -189,7 +189,7 @@
                 "description": "Name of the resource",
                 "title": "Name"
               },
-              "href": {
+              "url": {
                 "type": "string",
                 "description": "Url of the dataset or service",
                 "title": "Distribution link"
