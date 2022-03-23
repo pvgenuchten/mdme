@@ -6,7 +6,7 @@
               <h1>Welcome</h1>
               <p>&nbsp;</p> 
               <p>
-              This app aims to facilate the registration of a dataset based on common conventions.
+              This app aims to facilitate the registration of a dataset based on common conventions.
               Properties of a dataset are extracted from existing sources and/or entered manually.
               </p>
               <p>

@@ -116,6 +116,39 @@
         "crs": {
           "type": "string",
           "description": "Spatial projection system, e.g. EPSG:4326"
+        },
+        "datatype": {
+          "type": "string",
+          "description": "method used to represent geographic information in the dataset",
+          "enum": [
+            "vector",
+            "grid",
+            "textTable",
+            "tin",
+            "stereoModel",
+            "video"
+          ]
+        },
+        "geomtype": {
+          "type": "string",
+          "description": "name of point or vector objects used to locate zero-, one-, two-, or threedimensional spatial locations in the dataset",
+          "enum": [
+            "complex",
+            "composite",
+            "curve",
+            "point",
+            "solid",
+            "surface"
+          ]
+        },
+        "representation": {
+          "type": "string",
+          "description": "How the data is represented",
+          "x-fromUrl": "./codelists/representation.json",
+          "x-itemsProp": "results",
+          "x-itemTitle": "title",
+          "x-itemKey": "id",
+          "x-display": "combobox"
         }
       }
     },
