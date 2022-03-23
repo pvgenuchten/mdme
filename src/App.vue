@@ -52,6 +52,11 @@ import '@koumoul/vjsf/lib/VJsf.css'
 import '@koumoul/vjsf/lib/deps/third-party.js'
 import IntroPage from './components/IntroPage.vue'
 
+//import model
+const mdl = require('./model.json');
+//import template
+const tpl = require('./template.json');
+
 const opts = {}
 
 export default {
@@ -63,180 +68,10 @@ export default {
   opts,
   data: () => ({
     valid: false,
-    model: {
-      id:'',
-      title:'',
-      keywords:'',
-      date:'',
-      geographicalextent:'',
-      contacts:[{name:'',role:''}],
-      distributions:[],
-      citations:[],
-      language:'', 
-      description:''
-    },
+    model: tpl,
     opts,
     toptab: null,
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', description: "A UUID, URI, URN or DOI to identify the dataset" },
-        title: { type: 'string', required: true, description: "A consize distinctive title for the dataset" },
-        abstract: { type: 'string', description: "A brief description of the dataset" },
-        keywords: { type: 'string', description: "Separate keywords by semicolon ';'" },
-        language: { type: 'string', description: "Main language in dataset" },
-        status: { type: 'string', description: "Select the current status of the dataset", "enum": [
-                  "completed","historicalArchive","obsolete","onGoing","planned","required","underDevelopment"] },
-        maintenancefrequency: { type: 'string', description: 'Frequency with which the dataset is updated' },
-        "modDate": {
-            "type": "string",
-            "title": "Modification date",
-            "format": "date",
-            "description": "Last modification date for the dataset"
-        },
-        usageconstraints: {
-          "type": "string",
-          "title": "Usage constraints",
-          "x-fromUrl": "./codelists/datalicenses.json",
-          "description": "Indicates the legal constraints which may apply for usage of the data",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "id"
-        },
-        accessconstraints: {
-          "type": "string",
-          "title": "Access constraints",
-          "description": "Indicates any acces constrains, if relevant",
-          "x-fromUrl": "./codelists/accessconstraints.json",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "id"
-        },
-        topic: {
-          "type": "string",
-          "title": "Topic category",
-          "description": "A categorisation based on ISO19139",
-          "x-fromUrl": "./codelists/topicCat.json",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "id"
-        },
-        geographicalextent: { 
-          type: 'string',
-          "description": "Geographical extent, e.g. 'Verdon, France' or geographic bounds, e.g. '4,50,6,52'", },
-        temporalextent: { "type": "array",
-              "title": "Reference period",
-              "items": [
-                {
-                  "type": "string",
-                  "format": "date",
-                  "title": "Start"
-                },
-                {
-                  "type": "string",
-                  "format": "date",
-                  "title": "End"
-                }
-              ]
-        },
-        scale: { type: 'number', 'description': 'Scale (vector) or resolution (grid)' },
-        crs: { type: 'string', 'description': 'Spatial projection system, e.g. EPSG:4326' },
-        distributions: {
-          "type": "array",
-          "title": "Distributions",
-          "description": "Add a distribution",
-          "x-itemTitle": "href",
-          "items": {
-            "type": "object",
-            "required": [
-              "href"
-            ],
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "Name of the resource",
-                "title": "Name"
-              },
-              "href": {
-                "type": "string",
-                "description": "Url of the dataset or service",
-                "title": "Distribution link"
-              },
-              "protocol": {
-                "type": "string",
-                "description": "Format of protocol of the service",
-                "title": "Format/Protocol"
-              }
-            }
-          }
-        },
-        contacts: {
-          "type": "array",
-          "title": "Contacts",
-          "description": "Add a contact",
-          "x-itemTitle": "role",
-          "items": {
-            "type": "object",
-            "required": [
-              "role"
-            ],
-            "properties": {
-              "name": {
-                "type": "string",
-                "title": "Name"
-              },
-              "organisation": {
-                "type": "string",
-                "title": "Organisation"
-              },
-              "email": {
-                "type": "string",
-                "title": "Email"
-              },
-              "role": {
-                "type": "string",
-                "enum": [
-                  "author", "custodian", "distributor", "originator", "owner", "pointOfContact", "principalInvestigator", "processor", "publisher", "resourceProvider", "user", "metadata-contact"
-                ],
-                "title": "Select a role"
-              }
-            }
-          }
-        },
-        citations: {
-          "type": "array",
-          "title": "Citations",
-          "description": "Articles which reference this dataset",
-          "x-itemTitle": "title",
-          "items": {
-            "type": "object",
-            "properties": {
-              "doi": {
-                "type": "string",
-                "title": "DOI"
-              },
-              "title": {
-                "type": "string",
-                "title": "title"
-              },
-              "authors": {
-                "type": "string",
-                "title": "Authors"
-              },
-              "journal": {
-                "type": "string",
-                "title": "Journal"
-              },
-              "date": {
-                "type": "string",
-                "format":"date",
-                "title": "Publication date"
-              }
-            }
-          }
-        }
-      }
-    }
+    schema: mdl
   }),
   methods: {
     saveData() {

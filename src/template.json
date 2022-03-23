@@ -1,0 +1,19 @@
+{
+    "id": "",
+    "title": "",
+    "keywords": "",
+    "date": "",
+    "geographicalextent": "",
+    "contacts": [
+        {
+            "name": "",
+            "organisation": "ISRIC World Soil Information",
+            "email": "info@isric.org",
+            "role": "pointOfContact"
+        }
+    ],
+    "distributions": [],
+    "citations": [],
+    "language": "",
+    "description": ""
+}
