@@ -4,6 +4,7 @@
   "properties": {
     "identification": {
       "type": "object",
+      "description": "Core properties of the dataset",
       "title": "Identification",
       "properties": {
         "id": {
@@ -154,6 +155,7 @@
     },
     "contact": {
       "type": "object",
+      "description":"Contacts for this dataset, by role.",
       "title": "Contact information",
       "properties": {
         "contacts": {
@@ -204,6 +206,7 @@
     },
     "distribution": {
       "type": "object",
+      "description": "The url or path to the dataset file(s), service, documentation, and other resources.",
       "title": "Distribution",
       "properties": {
         "distributions": {
@@ -245,6 +248,7 @@
     "citation": {
       "type": "object",
       "title": "Citation",
+      "description":"References to articles which reference this dataset",
       "properties": {
         "citations": {
           "type": "array",
@@ -279,6 +283,91 @@
           }
         }
       }
+    },
+    "content-info":{
+      "type": "object",
+      "title": "Feature Catalogue",
+      "description": "This section facilitates to describe the data model of the dataset",
+      "properties":
+      {
+        "attributes": {
+          "type": "array",
+          "title": "Attributes",
+          "description": "Add an attribute description",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "attribute name"
+              },
+              "type": {
+                "type": "string",
+                "description": "data type of attribute",
+                "enum": [
+                  "string",
+                  "number",
+                  "integer",
+                  "object",
+                  "array",
+                  "boolean"
+                ]
+              },
+              "units": {
+                "type": "string",
+                "description": "SI Unit"
+              },
+              "title": {
+                "type": "string",
+                "description": "human readable title of attribute"
+              },
+              "abstract": {
+                "type": "string",
+                "description": "description of attribute, e.g. a mediatype describes the encoding of a file"
+              },
+              "url": {
+                "type": "string",
+                "description": "URL with more information about the attribute, e.g. http://schema.org/encodingFormat"
+              },
+              "values": {
+                "type": "object",
+                "title": "Codelist",
+                "description": "Populate a Codelist, if the attribute value is constrainted by a predefined list",
+                "properties": {
+                  "codelist": {
+                    "type": "array",
+                    "description": "values from a codelist",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "value code, e.g. application/gml+xml"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "human readable title of the value, e.g. Geography Markup Language (GML)"
+                        },
+                        "abstract": {
+                          "type": "string",
+                          "description": "description of the value, e.g. Geography Markup Language (GML), a standardised format to describe vector features"
+                        },
+                        "url": {
+                          "type": "string",
+                          "description": "URL with more information about the value, e.g. https://www.iana.org/assignments/media-types/application/gml+xml"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
+
