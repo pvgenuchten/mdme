@@ -13,4 +13,14 @@ Capabilities:
 - export metadata as mcf
 - persist metadata via python api (on git/pycsw/...)
 
-Currently deployed at https://isric-dataset-tagger.containers.wurnet.nl/
+## installation
+
+requires NODE YARN
+
+```
+yarn install
+yarn serve
+```
+
+visit http://localhost:8080
+Import a record, or move to 'annotate' tab directly to start editing
