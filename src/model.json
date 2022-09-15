@@ -15,7 +15,10 @@
       "format": "uri"
     },
     "conformsTo": {
-      "type": "string"
+      "type": "string",
+      "enum": [
+        "Feature"
+      ]
     },
     "type": {
       "type": "string",
@@ -87,6 +90,12 @@
         "type": {
           "type": "string",
           "description": "The nature or genre of the resource. The value should be a code, convenient for filtering the records. Where available, a link to the canonical URI of the record type resource will be added to the 'links' property.",
+          "enum": [
+            "dataset",
+            "service",
+            "feature",
+            "software"
+          ],
           "maxLength": 64
         },
         "title": {
