@@ -10,12 +10,15 @@ Capabilities:
   - WMS
   - iso19139 upload/reference (use python api to parse iso19139)
   - upload dataset (use python api to extract metadata from data; projection, bounds, name, format, column names, data-type)
+- edit metadata, the editor is generated from json-schema, change the editor by updating the schema file  
 - export metadata as mcf
-- persist metadata via python api (on git/pycsw/...)
+- persist metadata via python api (on git/pycsw/...), hope to support OGC API Records transactions soon
 
 ## installation
 
-requires NODE YARN
+requires 
+- NODE 
+- YARN
 
 ```
 yarn install
@@ -23,4 +26,5 @@ yarn serve
 ```
 
 visit http://localhost:8080
+
 Import a record, or move to 'annotate' tab directly to start editing
