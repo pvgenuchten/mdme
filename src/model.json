@@ -1,373 +1,345 @@
 {
   "type": "object",
   "x-display": "vertical-stepper",
+  "required": [
+    "id",
+    "type",
+    "time",
+    "geometry",
+    "properties"
+  ],
   "properties": {
-    "identification": {
+    "id": {
+      "type": "string",
+      "description": "A unique identifier of the catalogue record.",
+      "format": "uri"
+    },
+    "conformsTo": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Feature"
+      ]
+    },
+    "time": {
+      "oneOf": [
+        {
+          "type": null
+        },
+        {
+          "type": "object",
+          "properties": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": null
+                    },
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "geometry": {
+      "oneOf": [
+        {
+          "type": null
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "properties": {
       "type": "object",
-      "description": "Core properties of the dataset",
-      "title": "Identification",
+      "required": [
+        "type",
+        "title"
+      ],
       "properties": {
-        "id": {
+        "recordCreated": {
           "type": "string",
-          "description": "A UUID, URI, URN or DOI to identify the dataset"
+          "description": "Date of creation of this record.",
+          "format": "date-time"
+        },
+        "recordUpdated": {
+          "type": "string",
+          "description": "The most recent date on which the record was changed.",
+          "format": "date-time"
+        },
+        "type": {
+          "type": "string",
+          "description": "The nature or genre of the resource. The value should be a code, convenient for filtering the records. Where available, a link to the canonical URI of the record type resource will be added to the 'links' property.",
+          "maxLength": 64
         },
         "title": {
           "type": "string",
-          "required": true,
-          "description": "A consize distinctive title for the dataset"
+          "description": "A human-readable name given to the resource."
         },
-        "abstract": {
+        "description": {
           "type": "string",
-          "description": "A brief description of the dataset"
+          "description": "A free-text account of the resource."
         },
         "keywords": {
           "type": "array",
+          "description": "The topic or topics of the resource. Typically represented using free-form keywords, tags, key phrases, or classification codes.",
           "items": {
             "type": "string"
-          },
-          "description": "Add a keyword and 'enter' to add another keyword"
+          }
         },
         "language": {
           "type": "string",
-          "description": "Main language in dataset",
-          "x-fromUrl": "./codelists/language.json",
-          "x-itemsProp": "results",
-          "x-display": "combobox"
+          "description": "The natural language used for textual values (e.g. titles, descriptions, etc.) of the resource. ISO 639-1/639-2 codes should be used.",
+          "default": "en"
         },
-        "status": {
-          "type": "string",
-          "description": "Select the current status of the dataset",
-          "enum": [
-            "completed",
-            "historicalArchive",
-            "obsolete",
-            "onGoing",
-            "planned",
-            "required",
-            "underDevelopment"
-          ]
-        },
-        "maintenancefrequency": {
-          "type": "string",
-          "description": "Frequency with which the dataset is updated",
-          "x-fromUrl": "./codelists/maintenancefrquency.json",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "id"
-        },
-        "modDate": {
-          "type": "string",
-          "title": "Modification date",
-          "format": "date",
-          "description": "Last modification date for the dataset"
-        },
-        "usageconstraints": {
-          "type": "string",
-          "title": "Usage constraints",
-          "x-fromUrl": "./codelists/datalicenses.json",
-          "description": "Indicates the legal constraints which may apply for usage of the data",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "id",
-          "x-display": "combobox"
-        },
-        "accessconstraints": {
-          "type": "string",
-          "title": "Access constraints",
-          "description": "Indicates any acces constrains, if relevant",
-          "x-fromUrl": "./codelists/accessconstraints.json",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "id",
-          "x-display": "combobox"
-        },
-        "topic": {
-          "type": "string",
-          "title": "Topic category",
-          "description": "A categorisation based on ISO19139",
-          "x-fromUrl": "./codelists/topicCat.json",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "id"
-        },
-        "geographicalextent": {
-          "type": "string",
-          "description": "Geographical extent, e.g. 'Verdon, France' or geographic bounds, e.g. '4,50,6,52'"
-        },
-        "temporalextent": {
+        "externalIds": {
           "type": "array",
-          "title": "Reference period",
-          "items": [
-            {
-              "type": "string",
-              "format": "date",
-              "title": "Start"
+          "description": "An identifier for the resource assigned by an external (to the catalogue) entity.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "description": "A reference to an authority or identifier for a knowledge organization system from which the external identifier was obtained.  It is recommended that the identifier be a resolvable URI.",
+                "value": {
+                  "type": "string",
+                  "description": "The value of the identifier."
+                }
+              }
             },
-            {
-              "type": "string",
-              "format": "date",
-              "title": "End"
-            }
-          ]
-        },
-        "scale": {
-          "type": "number",
-          "description": "Scale (vector) or resolution (grid)"
-        },
-        "crs": {
-          "type": "string",
-          "description": "Spatial projection system, e.g. EPSG:4326"
-        },
-        "datatype": {
-          "type": "string",
-          "description": "method used to represent geographic information in the dataset",
-          "enum": [
-            "vector",
-            "grid",
-            "textTable",
-            "tin",
-            "stereoModel",
-            "video"
-          ]
-        },
-        "geomtype": {
-          "type": "string",
-          "description": "name of point or vector objects used to locate zero-, one-, two-, or threedimensional spatial locations in the dataset",
-          "enum": [
-            "complex",
-            "composite",
-            "curve",
-            "point",
-            "solid",
-            "surface"
-          ]
-        },
-        "representation": {
-          "type": "string",
-          "description": "How the data is represented",
-          "x-fromUrl": "./codelists/representation.json",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "id",
-          "x-display": "combobox"
-        }
-      }
-    },
-    "contact": {
-      "type": "object",
-      "description":"Contacts for this dataset, by role.",
-      "title": "Contact information",
-      "properties": {
-        "contacts": {
-          "type": "array",
-          "title": "Contacts",
-          "description": "Add a contact",
-          "x-itemTitle": "role",
-          "items": {
-            "type": "object",
             "required": [
-              "role"
-            ],
-            "properties": {
-              "name": {
-                "type": "string",
-                "title": "Name"
-              },
-              "organisation": {
-                "type": "string",
-                "title": "Organisation"
-              },
-              "email": {
-                "type": "string",
-                "title": "Email"
-              },
-              "role": {
-                "type": "string",
-                "enum": [
-                  "author",
-                  "custodian",
-                  "distributor",
-                  "originator",
-                  "owner",
-                  "pointOfContact",
-                  "principalInvestigator",
-                  "processor",
-                  "publisher",
-                  "resourceProvider",
-                  "user",
-                  "metadata-contact"
-                ],
-                "title": "Select a role"
-              }
-            }
+              "value"
+            ]
           }
-        }
-      }
-    },
-    "distribution": {
-      "type": "object",
-      "description": "The url or path to the dataset file(s), service, documentation, and other resources.",
-      "title": "Distribution",
-      "properties": {
-        "distributions": {
+        },
+        "created": {
+          "type": "string",
+          "description": "Date of creation of the resource.",
+          "format": "date-time"
+        },
+        "updated": {
+          "type": "string",
+          "description": "Most recent date on which the resource was changed.",
+          "format": "date-time"
+        },
+        "themes": {
           "type": "array",
-          "title": "Distributions",
-          "description": "Add a distribution",
-          "x-itemTitle": "href",
-          "items": {
-            "type": "object",
-            "required": [
-              "href"
-            ],
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "Name of the resource",
-                "title": "Name"
-              },
-              "url": {
-                "type": "string",
-                "description": "Url of the dataset or service",
-                "title": "Distribution link"
-              },
-              "protocol": {
-                "type": "string",
-                "description": "Format of protocol of the service",
-                "title": "Format/Protocol",
-                "x-fromUrl": "./codelists/format.json",
-                "x-itemsProp": "results",
-                "x-itemTitle": "title",
-                "x-itemKey": "id",
-                "x-display": "combobox"
-              }
-            }
-          }
-        }
-      }
-    },
-    "citation": {
-      "type": "object",
-      "title": "Citation",
-      "description":"References to articles which reference this dataset",
-      "properties": {
-        "citations": {
-          "type": "array",
-          "title": "Citations",
-          "description": "Articles which reference this dataset",
-          "x-itemTitle": "title",
+          "description": "A knowledge organization system used to classify the resource.",
           "items": {
             "type": "object",
             "properties": {
-              "doi": {
-                "type": "string",
-                "title": "DOI"
+              "concepts": {
+                "type": "array",
+                "description": "One or more entity/concept identifers from this knowledge system. it is recommended that a resolvable URI be used for each entity/concept identifier.",
+                "items": {
+                  "type": "string"
+                }
               },
-              "title": {
+              "scheme": {
                 "type": "string",
-                "title": "title"
-              },
-              "authors": {
-                "type": "string",
-                "title": "Authors"
-              },
-              "journal": {
-                "type": "string",
-                "title": "Journal"
-              },
-              "date": {
-                "type": "string",
-                "format": "date",
-                "title": "Publication date"
+                "description": "An identifier for the knowledge organization system used to classify the resource.  It is recommended that the identifier be a resolvable URI."
               }
             }
           }
-        }
-      }
-    },
-    "content-info":{
-      "type": "object",
-      "title": "Feature Catalogue",
-      "description": "This section facilitates to describe the data model of the dataset",
-      "properties":
-      {
-        "attributes": {
+        },
+        "formats": {
           "type": "array",
-          "title": "Attributes",
-          "description": "Add an attribute description",
-          "minItems": 1,
+          "description": "A list of available distributions of the resource.",
           "items": {
-            "type": "object",
-            "properties": {
-              "name": {
+            "type": "string"
+          }
+        },
+        "providers": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
                 "type": "string",
-                "description": "attribute name"
+                "description": "A reference to information about the responsible party.  For example,\na link to a VCard (see https://www.w3.org/TR/vcard-rdf/).",
+                "format": "url"
               },
-              "type": {
-                "type": "string",
-                "description": "data type of attribute",
-                "enum": [
-                  "string",
-                  "number",
-                  "integer",
-                  "object",
-                  "array",
-                  "boolean"
-                ]
-              },
-              "units": {
-                "type": "string",
-                "description": "SI Unit"
-              },
-              "title": {
-                "type": "string",
-                "description": "human readable title of attribute"
-              },
-              "abstract": {
-                "type": "string",
-                "description": "description of attribute, e.g. a mediatype describes the encoding of a file"
-              },
-              "url": {
-                "type": "string",
-                "description": "URL with more information about the attribute, e.g. http://schema.org/encodingFormat"
-              },
-              "values": {
+              {
                 "type": "object",
-                "title": "Codelist",
-                "description": "Populate a Codelist, if the attribute value is constrainted by a predefined list",
+                "description": "Identification of, and means of communication with, person responsible\nfor the resource.",
+                "required": [
+                  "name"
+                ],
                 "properties": {
-                  "codelist": {
+                  "identifier": {
+                    "type": "string",
+                    "description": "A value uniquely identifying a party (individual or organization)"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the organization or the individual."
+                  },
+                  "positionName": {
+                    "type": "string",
+                    "description": "Role or position of the responsible person."
+                  },
+                  "logo": {
+                    "type": "string",
+                    "description": "Graphic identifying a party"
+                  },
+                  "contactInfo": {
+                    "type": "object",
+                    "description": "Information required to enable contact with the responsible party.",
+                    "properties": {
+                      "phone": {
+                        "type": "object",
+                        "description": "Telephone numbers at which contact can be made.",
+                        "patternProperties": {
+                          "^.*": {
+                            "type": "string",
+                            "description": "The key name indicates the type of phone number (e.g. home,\nwork, fax, etc.). The value is the phone number itself.",
+                            "pattern": "^+[1-9]{1}[0-9]{3,14}$"
+                          }
+                        }
+                      },
+                      "email": {
+                        "type": "object",
+                        "description": "Email address at which contact can be made.",
+                        "patternProperties": {
+                          "^.*": {
+                            "type": "string",
+                            "description": "The key name indicates the type of email address (e.g. home,\nwork, etc.). The value of the email address itself.",
+                            "format": "email"
+                          }
+                        }
+                      },
+                      "address": {
+                        "type": "object",
+                        "description": "Physical location at which contact can be made.",
+                        "patternProperties": {
+                          "^.*": {
+                            "type": "object",
+                            "description": "The key name indicates the type of address (e.g. office,\nhome, etc.). The value is the address itself.",
+                            "properties": {
+                              "deliveryPoint": {
+                                "type": "string",
+                                "description": "Address line for the location."
+                              },
+                              "city": {
+                                "type": "string",
+                                "description": "City for the location."
+                              },
+                              "administrativeArea": {
+                                "type": "string",
+                                "description": "State or province of the location."
+                              },
+                              "postalCode": {
+                                "type": "string",
+                                "description": "ZIP or other postal code."
+                              },
+                              "country": {
+                                "type": "string",
+                                "description": "Country of the physical address."
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "On-line information about the responsible party."
+                      },
+                      "hoursOfService": {
+                        "type": "string",
+                        "description": "Time period (including time zone) when the resposible party\ncan be contacted."
+                      },
+                      "contactInstructions": {
+                        "type": "string",
+                        "description": "Supplemental instructions on how or when to contact the\nresponsible party."
+                      }
+                    }
+                  },
+                  "roles": {
                     "type": "array",
-                    "description": "values from a codelist",
-                    "minItems": 1,
                     "items": {
                       "type": "object",
+                      "description": "The function performed by the responsible party. Suggested codelists include the STAC Collection\nProvider roles as well as ISO 19115.",
+                      "required": [
+                        "name"
+                      ],
                       "properties": {
                         "name": {
-                          "type": "string",
-                          "description": "value code, e.g. application/gml+xml"
+                          "type": "string"
                         },
-                        "title": {
+                        "authority": {
                           "type": "string",
-                          "description": "human readable title of the value, e.g. Geography Markup Language (GML)"
-                        },
-                        "abstract": {
-                          "type": "string",
-                          "description": "description of the value, e.g. Geography Markup Language (GML), a standardised format to describe vector features"
-                        },
-                        "url": {
-                          "type": "string",
-                          "description": "URL with more information about the value, e.g. https://www.iana.org/assignments/media-types/application/gml+xml"
+                          "format": "uri"
                         }
                       }
                     }
                   }
                 }
               }
-            }
+            ]
+          },
+          "description": "A list of providers qualified by their role in association to the record."
+        },
+        "license": {
+          "type": "string",
+          "description": "A legal document under which the resource is made available. The value should be a code, convenient for filtering the records. Where applicable, the use of the identifiers from the SPDX License List is recommended. If multiple licenses apply, it is recommended to use \"various\".  Where available, links to a URI of each applicable license should be added to the 'links' property.",
+          "maxLength": 64
+        },
+        "rights": {
+          "type": "string",
+          "description": "A statement that concerns all rights not addressed by the license such as a copyright statement."
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "description": "A list of links for accessing the resource (e.g. download link, access link) in one of the supported distribution formats and/or links to other resources associated with this resource. Also, a list of links for navigating the API (e.g. prev, next, etc.).",
+      "items": {
+        "type": "object",
+        "required": [
+          "href"
+        ],
+        "properties": {
+          "href": {
+            "type": "string",
+            "format": "url"
+          },
+          "rel": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "hreflang": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "templated": {
+            "type": "boolean"
+          },
+          "variables": {
+            "description": "This object contains one key per substitution variable in a templated\nhref.  Each key defines the schema of one substitution variable using\na JSON Schema fragment and can thus include things like the data type\nof the variable, enumerations, minimum values, maximum values, etc.\nIn combination with a templated href, the variables section should\nprovide enough information to bind to the target resource (e.g. a WMS).",
+            "type": "object"
           }
         }
       }
     }
   }
 }
-
