@@ -59,10 +59,12 @@ import '@koumoul/vjsf/lib/VJsf.css'
 import '@koumoul/vjsf/lib/deps/third-party.js'
 import IntroPage from './components/IntroPage.vue'
 
+const vocab = "ogcapi-record"; //mcf
+
 //import model
-const mdl = require('./model.json');
+const mdl = require('./models/'+vocab+'/model.json');
 //import template
-const tpl = require('./template.json');
+const tpl = require('./models/'+vocab+'/template.json');
 
 const opts = {}
 

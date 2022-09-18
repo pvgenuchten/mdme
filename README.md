@@ -1,8 +1,10 @@
 # dataset-tagger
 
 App to fetch metadata from a dataset and complete the annotations in a basic web form.
-The metadata model is oriented on pygeometa's mcf (a yaml encoding related to iso19139)
-Model is defined on model.json (idea could be to override this file during deployment), some special fields added for vizualisations (defined by [vjsf](https://koumoul-dev.github.io/vuetify-jsonschema-form/latest/examples#basic)). Codelists are generally loaded from codelists/*
+
+The metadata model supports multiple metadata models (and can easily be extended),  pygeometa's mcf (a yaml encoding oriented to iso19139) and ogcapi-records.
+
+Models are defined in `/models/{model}/model.json`. Used by [vjsf](https://koumoul-dev.github.io/vuetify-jsonschema-form/latest/examples#basic) component to build the form. Some special fields ('x-display: 'hidden') added for vizualisations. Which model to use is defined in `app.vue`.
 
 Capabilities: 
 - import metadata from:
